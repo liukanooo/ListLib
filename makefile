@@ -9,7 +9,8 @@ COQ_FLAG = -Q $(CURRENT_DIR) ListLib
 DEP_FLAG = -Q $(CURRENT_DIR) ListLib 
 
 LIST_FILES = \
- 	 		Core.v Inductive.v Positional.v Basics.v
+	Base/Positional.v Base/Inductive.v \
+	General/Length.v General/Presuffix.v General/Forall.v General/IndexedElements.v
 
 
 FILES = \

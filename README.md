@@ -2,164 +2,85 @@
 
 本库提供列表相关的基础操作和性质证明，是算法验证中处理列表数据结构的核心工具库。
 
+## 设计理念
+
+本库采用分层设计，将列表操作分为两个层次：
+
+- **基础层（Base/）**：提供基于不同视角的列表基础操作
+  - **归纳视角**：基于 `cons`、`nil`、`app` 等归纳构造的列表操作
+  - **位置视角**：基于位置索引（`Znth`、`Zsublist` 等）的列表访问
+
+- **通用层（General/）**：基于基础层构建的高级列表性质和定义
+
 ## 文件结构
 
-```
-ListLib/
-├── Core.v          # 核心定义
-├── Positional.v    # 位置相关操作
-├── Inductive.v     # 归纳性质
-└── Basics.v        # 基础引理和等价性证明
-```
+### Base/ - 基础层
 
-## 模块说明
+#### `Inductive.v` - 归纳构造相关
 
-### Core.v - 核心定义
+基于列表的归纳结构提供基础引理。
 
-定义列表的前缀、后缀和子列表的两种表示方法。
+#### `Positional.v` - 位置索引相关
 
-#### 主要定义
+提供基于位置索引的列表操作定义及基础性质：
 
-**归纳定义（基于列表拼接）：**
-- `prefix_ind l1 l2`: `l1`是`l2`的前缀，即存在`l`使得`l2 = l1 ++ l`
-- `suffix_ind l1 l2`: `l1`是`l2`的后缀，即存在`l`使得`l2 = l ++ l1`
-- `sublist_ind l1 l2`: `l1`是`l2`的子列表，即存在`l3`、`l4`使得`l2 = l3 ++ l1 ++ l4`
+**核心定义：**
+- `Znth n l d`: `l`的第`n`项，如果`n`超出范围，那么返回缺省值`d`
+- `Znth_error n l`: `l`的第`n`项，如果`n`超出范围，那么返回`None`
+- `replace_Znth n l a`: 将`l`的第`n`项替换为`a`，如果`n`超出范围，那么返回`l`
+- `replace_Znth_error n l a`: 将`l`的第`n`项替换为`a`，如果`n`超出范围，那么返回`None`
+- `Zsublist lo hi l`: 提取列表`l`在区间`[lo, hi)`内的子列表，如果`lo`或`hi`为负，则视作`0`，如果`lo`或`hi`超出长度，则视作`Zlength l`
 
-**位置定义（基于索引操作）：**
-- `prefix_pos l1 l2`: `l1`是`l2`的前缀，即存在`hi`使得`l1 = firstn hi l2`
-- `suffix_pos l1 l2`: `l1`是`l2`的后缀，即存在`lo`使得`l1 = skipn lo l2`
-- `sublist_pos l1 l2`: `l1`是`l2`的子列表，即存在`lo`、`hi`使得`l1 = skipn lo (firstn hi l2)`
-- `sublist'_pos l1 l2`: 子列表的另一种位置定义，使用`firstn (skipn ...)`
+**底层性质：**
+关于`Znth`, `Znth_error`, `replace_Znth`, `replace_Znth_error`, `Zsublist`的证明。
 
-### Positional.v - 位置相关操作
+### General/ - 通用层
 
-提供基于位置索引的列表操作函数及其性质。
+#### `Length.v` - 列表长度
 
-#### 主要定义
+提供列表长度的定义及其与各种列表操作的关系：
 
-- `to_sublist_pos lo hi l`: 提取列表`l`在区间`[lo, hi)`内的子列表
+**核心定义：**
+- `Zlength l`: 列表长度的 Z 类型版本
 
-#### 核心引理
+**基本性质：**
+- `Zlength` 与 `app`、`cons`、`nil` 的性质
+- `Zlength` 与 `Znth`、`replace_Znth`、`Zsublist` 的性质
 
-**长度相关：**
-- `length_sublist`: 子列表长度计算
-- `length_sublist'`: 带min的长度计算公式
+#### `Presuffix.v` - 前缀、后缀与子列表
 
-**索引访问：**
-- `nth_sublist`: 子列表的第`i`个元素等于原列表的第`i+lo`个元素
-- `sublist_single`: 单元素子列表
-- `sublist_one_ele`: 子列表追加单元素
+定义前缀、后缀、子列表关系及其性质：
 
-**分割与组合：**
-- `sublist_split`: 子列表的分割：`to_sublist_pos lo hi l = to_sublist_pos lo mid l ++ to_sublist_pos mid hi l`
-- `sublist_split_app_l`: 左侧列表的子列表
-- `sublist_split_app_r`: 右侧列表的子列表
+**核心定义：**
+- `is_prefix l1 l2`: `l1` 是 `l2` 的前缀（存在 `l3` 使得 `l2 = l1 ++ l3`）
+- `is_suffix l1 l2`: `l1` 是 `l2` 的后缀（存在 `l3` 使得 `l2 = l3 ++ l1`）
+- `is_sublist l1 l2`: `l1` 是 `l2` 的子列表
 
-**特殊情况：**
-- `sublist_nil`: 空子列表
-- `sublist_self`: 完整列表
+**基本性质：**
+- `is_prefix`, `is_suffix`, `is_sublist` 与 `app`、`cons`、`nil` 的性质
+- `is_prefix`, `is_suffix`, `is_sublist` 与 `Znth`、`replace_Znth`、`Zsublist` 的性质
 
-**Forall2相关：**
-- `Forall2_split`: `Forall2`在分割点的性质
-- `combine_skipn`: `combine`与`skipn`的交换
+#### `IndexedElements.v` - 索引元素列表
 
-### Inductive.v - 归纳性质
+定义通过索引列表从原列表中提取元素的操作：
 
-提供列表归纳性质和`Forall2`相关引理。
+**核心定义：**
+- `is_indexed_elements l il l0`: 从列表 `l` 中按索引列表 `il` 依次取出元素得到 `l0`
+- `sincr il`: 索引列表严格递增
+- `is_subsequence l1 l2`: `l1` 是 `l2` 的子序列（可跳过元素）
 
-#### 主要引理
+**基本性质：**
+- `is_indexed_elements` 与 `app`、`cons`、`nil` 的性质
+- `is_indexed_elements` 与 `Znth`、`replace_Znth`、`Zsublist` 的性质
 
-**列表构造：**
-- `snoc_destruct`: 列表从后向前的归纳分解
-- `app_cons`: 列表拼接与cons的转换
+#### `Forall.v` - Forall 谓词扩展
 
-**Forall2操作：**
-- `Forall2_congr`: `Forall2`的蕴含关系转换
-- `Forall2_map1`: `Forall2`对第一个列表应用map
-- `Forall2_map2`: `Forall2`对第二个列表应用map
+提供 `Forall` 和 `Forall2` 谓词的扩展引理：
 
-### Basics.v - 基础引理
+**基本性质：**
+- `Forall2` 与 `app`、`cons`、`nil` 的性质
+- `Forall2` 与 `Znth`、`replace_Znth`、`Zsublist` 的性质
 
-建立归纳定义与位置定义之间的等价关系，并提供各种转换引理。
-
-#### 核心定理
-
-**等价性定理：**
-- `prefix_ind_iff_positional`: 前缀的两种定义等价
-- `suffix_ind_iff_positional`: 后缀的两种定义等价
-- `sublist_ind_iff_positional`: 子列表的两种定义等价
-
-**标准化定义：**
-```coq
-Definition prefix {A: Type} := @prefix_ind A.
-Definition suffix {A: Type} := @suffix_ind A.
-Definition sublist {A: Type} := @sublist_ind A.
-```
-
-**记法：**
-```coq
-Notation "l1 'is_a_prefix_of' l2" := (prefix l1 l2)
-Notation "l1 'is_a_suffix_of' l2" := (suffix l1 l2)
-Notation "l1 'is_a_sublist_of' l2" := (sublist l1 l2)
-```
-
-**Forall2与nth的关系：**
-- `Forall2_nth_iff`: `Forall2 P xs ys` 等价于长度相等且对应位置元素满足`P`
-
-## 使用示例
-
-```coq
-Require Import ListLib.Basics.
-Require Import ListLib.Positional.
-
-(* 前缀判断 *)
-Example prefix_example:
-  [1; 2] is_a_prefix_of [1; 2; 3; 4].
-Proof.
-  exists [3; 4]. reflexivity.
-Qed.
-
-(* 子列表提取 *)
-Example sublist_example:
-  to_sublist_pos 1 3 [0; 1; 2; 3; 4] = [1; 2].
-Proof.
-  reflexivity.
-Qed.
-
-(* 子列表分割 *)
-Example split_example:
-  forall l, 
-    to_sublist_pos 0 5 l = 
-    to_sublist_pos 0 3 l ++ to_sublist_pos 3 5 l.
-Proof.
-  intros. apply sublist_split; lia.
-Qed.
-```
-
-## 依赖关系
-
-- **标准库**: `Coq.Lists.List`, `Coq.Arith.Arith`, `Lia`
-- **内部依赖**: `Core` → `Positional` → `Inductive` → `Basics`
-
-## 常用引理索引
-
-### 列表前缀/后缀
-- 判断：使用`prefix`/`suffix`定义
-- 长度：`prefix_length`/`suffix_length`
-- 等价：`prefix_ind_iff_positional`/`suffix_ind_iff_positional`
-
-### 子列表操作
-- 提取：`to_sublist_pos lo hi l`
-- 访问：`nth_sublist`
-- 长度：`length_sublist`
-- 分割：`sublist_split`
-
-### Forall2操作
-- 逐点等价：`Forall2_nth_iff`
-- 映射保持：`Forall2_map1`/`Forall2_map2`
-- 分割：`Forall2_split`
-
----
-
-*该库是CS2205图论算法验证项目的最短路的基础组件*
-
+## 补充
+底层文件中放索引自身的性质；每一种通用定义都拥有独立的文件，文件内分别有该定义与cons/app和索引之间的证明。
+通用层之间的交互，例如Forall2和map的交互，Presuffix和Length的交互以及IndexedElements和Forall2的交互等等，目前放在依赖关系最高一层的文件中。
