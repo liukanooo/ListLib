@@ -15,6 +15,9 @@ Definition Znth_error {A: Type} (l: list A) (n: Z): option A :=
   then nth_error l (Z.to_nat n)
   else None.
 
+Definition tl_error {A: Type}(l: list A): option A := 
+    nth_error l (length l - 1).
+
 Fixpoint replace_nth {A: Type} (n: nat) (l: list A) (a: A) {struct l} :=
     match l, n with
     | [], _ => []
@@ -225,6 +228,35 @@ Proof.
   rewrite nth_firstn by lia.
   f_equal.
   lia.
+Qed.
+
+(* tl_error *)
+
+Lemma tl_error_last: forall a (l: list A),
+  tl_error (l ++ a :: nil) = Some a. 
+Proof.
+  intros.
+  unfold tl_error.
+  rewrite length_app.
+  simpl.
+  rewrite nth_error_app2; [|lia]. 
+  replace (length l + 1 - 1 - length l) with O by lia. 
+  reflexivity.
+Qed.
+
+Lemma tl_error_app_skipn_connected: forall (l1 l2: list A),
+  l1 <> nil ->
+  l2 <> nil ->
+  tl_error l1 = hd_error l2 ->
+  tl_error (l1 ++ skipn 1 l2) = tl_error l2.
+Proof.
+  intros. 
+  apply exists_last in H0 as [x [b ->]].
+  rewrite tl_error_last. 
+  destruct x; simpl in *. 
+  rewrite app_nil_r; auto. 
+  rewrite app_assoc. 
+  apply tl_error_last.
 Qed.
 
 

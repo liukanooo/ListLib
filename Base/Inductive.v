@@ -9,6 +9,7 @@ Lemma list_snoc_destruct: forall {A: Type} (l: list A),
   l = nil \/
   exists a l', l = l' ++ [a].
 Proof.
+  Search nil "last".
   intros.
   revert l; apply rev_ind.
   + left; reflexivity.
