@@ -18,3 +18,14 @@ Proof.
       exists x, (a :: l1), l2, l3.
       simpl; rewrite H; auto.
 Qed.
+
+Lemma Nodup_split_constructors :
+  forall {A: Type} (p1 p2 : list A) (e : A),
+    NoDup (p1 ++ e :: p2) ->
+    ~ In e p1 /\ ~ In e p2.
+Proof.
+  intros. 
+  apply NoDup_remove_2 in H. 
+  rewrite in_app_iff in H. 
+  tauto.
+Qed.
