@@ -255,3 +255,15 @@ Proof.
 Qed.
 
 End Forall2And.
+
+Lemma Forall_in_cons {A: Type}:
+  forall (l: list A) e p,
+    Forall (fun x => In x (e :: l)) p ->
+    ~ In e p ->
+    Forall (fun x => In x l) p.
+Proof.
+  intros l e p Hforall Hnotin.
+  rewrite Forall_forall in *.
+  intros x Hin.
+  pose proof Hforall _ Hin as [|]; [subst; contradiction|auto].
+Qed.
