@@ -116,7 +116,7 @@ Qed.
 Lemma replace_Znth_app_l : forall n (a: A) l1 l2,
   (0 <= n) -> 
   (n < Zlength l1) ->
-  replace_Znth n (l1 ++ l2) a = replace_Znth n l1 a ++ l2.
+  replace_Znth n a (l1 ++ l2) = replace_Znth n a l1 ++ l2.
 Proof.
   intros.
   unfold replace_Znth.
@@ -127,7 +127,7 @@ Qed.
 
 Lemma replace_Znth_app_r : forall n (a: A) l1 l2,
   (n >= Zlength l1) ->
-  replace_Znth n (l1 ++ l2) a = replace_Znth n l1 a ++ replace_Znth (n - Zlength l1) l2 a.
+  replace_Znth n a (l1 ++ l2) = replace_Znth n a l1 ++ replace_Znth (n - Zlength l1) a l2.
 Proof. 
   intros.
   unfold replace_Znth.
@@ -139,7 +139,7 @@ Qed.
 
 
 Lemma replace_Znth_nothing : forall n (l: list A) (a: A),
-  n >= Zlength l -> replace_Znth n l a = l.
+  n >= Zlength l -> replace_Znth n a l = l.
 Proof.
   intros.
   rewrite Zlength_correct in H.

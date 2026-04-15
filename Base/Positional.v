@@ -25,7 +25,7 @@ Fixpoint replace_nth {A: Type} (n: nat) (l: list A) (a: A) {struct l} :=
     | h :: t, S n => h :: replace_nth n t a
     end.
 
-Definition replace_Znth {A: Type} (n: Z) (l: list A) (a: A): list A :=
+Definition replace_Znth {A: Type} (n: Z) (a: A) (l: list A): list A :=
   replace_nth (Z.to_nat n) l a.
 
 Definition sublist {A: Type} (lo hi: nat) (l: list A): list A :=
@@ -94,8 +94,8 @@ Qed.
 
 Lemma replace_Znth_cons: forall n (a b: A) l,
   n > 0 ->
-  replace_Znth n (b :: l) a =
-  b :: replace_Znth (n - 1) l a.
+  replace_Znth n a (b :: l) =
+  b :: replace_Znth (n - 1) a l.
 Proof.
   intros.
   unfold replace_Znth.
@@ -107,7 +107,7 @@ Qed.
 
 
 Lemma replace_Znth_Znth: forall n l (a0: A),
-  replace_Znth n l (Znth n l a0) = l.
+  replace_Znth n (Znth n l a0) l = l.
 Proof.
   intros.
   unfold Znth, replace_Znth.
