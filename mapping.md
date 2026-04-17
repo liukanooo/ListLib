@@ -18,40 +18,41 @@
 | **replace_Znth_app_r** | General/Length.v | replace_Znth_app_r | |
 | **replace_Znth_Znth** | Base/Positional.v | replace_Znth_Znth | 参数顺序调整 |
 | **replace_Znth_nothing** | General/Length.v | replace_Znth_nothing | |
-| **sublist (Definition)** | Base/Positional.v | Zsublist | Z版本更名为 Zsublist |
-| **sublist_split_app_l** | General/Length.v | Zsublist_split_app_l | |
-| **sublist_single** | General/Length.v | Zsublist_single | |
-| **sublist_split** | General/Length.v | Zsublist_split | |
+| **sublist (Definition)** | Base/Positional.v | Nsublist | nat 版本更名为 Nsublist |
+| **Zsublist (Definition)** | Base/Positional.v | sublist | Z 版本保持为 sublist |
+| **sublist_split_app_l** | General/Length.v | sublist_split_app_l | |
+| **sublist_single** | General/Length.v | sublist_single | |
+| **sublist_split** | General/Length.v | sublist_split | |
 | **Zlength_nonneg** | General/Length.v | Zlength_nonneg | |
 | **Zlength_app** | General/Length.v | Zlength_app | |
 | **Zlength_app_cons** | General/Length.v | Zlength_app_cons | |
 | **app_Znth1** | General/Length.v | app_Znth1 | |
 | **app_Znth2** | General/Length.v | app_Znth2 | |
-| **Znth_sublist** | General/Length.v | Znth_Zsublist | |
-| **Znth_sublist0** | General/Length.v | Znth_Zsublist0 | |
+| **Znth_sublist** | General/Length.v | Znth_sublist | |
+| **Znth_sublist0** | General/Length.v | Znth_sublist0 | |
 | **Znth_indep** | General/Length.v | Znth_indep | |
-| **Zlength_sublist** | General/Length.v | Zlength_Zsublist | |
-| **Zlength_sublist0** | General/Length.v | Zlength_Zsublist0 | |
+| **Zlength_sublist** | General/Length.v | Zlength_sublist | |
+| **Zlength_sublist0** | General/Length.v | Zlength_sublist0 | |
 | **sublist_sublist** | Base/Positional.v | Zsublist_Zsublist | |
 | **sublist_sublist0** | Base/Positional.v | Zsublist_Zsublist0 | |
 | **sublist_sublist00** | Base/Positional.v | Zsublist_Zsublist00 | |
-| **sublist_app_exact1** | General/Length.v | Zsublist_app_exact1 | |
+| **sublist_app_exact1** | General/Length.v | sublist_app_exact1 | |
 | **sum** | - | - | 未在新文件中发现 |
 | **sum_app** | - | - | 未在新文件中发现 |
 | **sum_bound** | - | - | 未在新文件中发现 |
 | **sum_bound_lt** | - | - | 未在新文件中发现 |
-| **sublist_length** | General/Length.v | Zsublist_length | |
-| **Znth_sublist_lt** | General/Length.v | Znth_Zsublist_lt | |
-| **Znth_sublist_ge** | General/Length.v | Znth_Zsublist_ge | |
+| **sublist_length** | General/Length.v | sublist_length | |
+| **Znth_sublist_lt** | General/Length.v | Znth_sublist_lt | |
+| **Znth_sublist_ge** | General/Length.v | Znth_sublist_ge | |
 | **list_eq_ext** | General/Length.v | list_eq_ext | |
 | **list_snoc_destruct** | Base/Inductive.v | list_snoc_destruct | |
 | **sublist_nil** | Base/Positional.v | Zsublist_nil | |
 | **sublist_of_nil** | Base/Positional.v | Zsublist_of_nil | |
-| **sublist_self** | General/Length.v | Zsublist_self | |
-| **Zlength_sublist'** | General/Length.v | Zlength_Zsublist' | |
-| **sublist_split_app_r** | General/Length.v | Zsublist_split_app_r | |
-| **sublist_cons1** | General/Length.v | Zsublist_cons1 | |
-| **sublist_cons2** | General/Length.v | Zsublist_cons2 | |
+| **sublist_self** | General/Length.v | sublist_self | |
+| **Zlength_sublist'** | General/Length.v | Zlength_sublist' | |
+| **sublist_split_app_r** | General/Length.v | sublist_split_app_r | |
+| **sublist_cons1** | General/Length.v | sublist_cons1 | |
+| **sublist_cons2** | General/Length.v | sublist_cons2 | |
 | **interval_list** | ExListLib/InvertalList.v | interval_list | |
 | **interval_list_valid1** | ExListLib/InvertalList.v | interval_list_bounded_lt | |
 | **interval_list_valid2** | ExListLib/InvertalList.v | interval_list_NoDup | |

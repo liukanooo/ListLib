@@ -183,25 +183,25 @@ Proof.
 Qed.
 
 
-(* == about Zsublist == *)
+(* == about sublist == *)
 
-Lemma Zsublist_length : forall lo hi (l : list A),
+Lemma sublist_length : forall lo hi (l : list A),
   0 <= lo <= hi -> 
   hi <= Zlength l -> 
-  length (Zsublist lo hi l) = Z.to_nat (hi - lo).
+  length (sublist lo hi l) = Z.to_nat (hi - lo).
 Proof.
   intros.
-  unfold Zsublist.
+  unfold sublist.
   rewrite length_skipn, length_firstn.
   rewrite Zlength_correct in H0.
   lia.
 Qed.
 
-Lemma Zsublist_app_exact1: forall (l1 l2: list A),
-  Zsublist 0 (Zlength l1) (l1 ++ l2) = l1.
+Lemma sublist_app_exact1: forall (l1 l2: list A),
+  sublist 0 (Zlength l1) (l1 ++ l2) = l1.
 Proof.
   intros.
-  unfold Zsublist.
+  unfold sublist.
   rewrite Zlength_correct.
   rewrite Nat2Z.id.
   replace (length l1) with (length l1 + O)%nat by lia.
@@ -211,13 +211,13 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma Zsublist_split_app_l : forall lo hi (l1 l2 : list A),
+Lemma sublist_split_app_l : forall lo hi (l1 l2 : list A),
   0 <= lo <= hi -> 
   hi <= Zlength l1 -> 
-  Zsublist lo hi (l1 ++ l2) = Zsublist lo hi l1.
+  sublist lo hi (l1 ++ l2) = sublist lo hi l1.
 Proof.
   intros.
-  unfold Zsublist.
+  unfold sublist.
   rewrite firstn_app.
   simpl. 
   rewrite Zlength_correct in H0.
@@ -225,14 +225,14 @@ Proof.
   rewrite app_nil_r. auto. 
 Qed. 
 
-Lemma Zsublist_single : forall n (l : list A),
-  0 <= n < Zlength l -> Zsublist n (n + 1) l = [Znth n l d].
+Lemma sublist_single : forall n (l : list A),
+  0 <= n < Zlength l -> sublist n (n + 1) l = [Znth n l d].
 Proof.
   intros.
   rewrite Zlength_correct in *.
   rewrite (firstn_skipSn d (Z.to_nat n) l) at 1; try lia.
   unfold Znth. 
-  unfold Zsublist.
+  unfold sublist.
   rewrite firstn_app.
   assert (length (firstn (Z.to_nat n) l) = Z.to_nat n) by (rewrite length_firstn; lia).
   rewrite firstn_all2; try lia. 
@@ -243,10 +243,10 @@ Proof.
   simpl. reflexivity.
 Qed. 
 
-Lemma Zsublist_split: forall lo hi mid (l : list A),
+Lemma sublist_split: forall lo hi mid (l : list A),
   0 <= lo <= mid -> 
   mid <= hi <= Zlength l ->
-  Zsublist lo hi l = Zsublist lo mid l ++ Zsublist mid hi l.
+  sublist lo hi l = sublist lo mid l ++ sublist mid hi l.
 Proof.
   intros.
   rewrite <- (firstn_skipn (Z.to_nat hi) l).
@@ -268,8 +268,8 @@ Proof.
   rewrite Zlength_correct in H0.
   rewrite H2 in H0.
   clear Heql1 Heql2 H2 l.
-  do 3 (rewrite Zsublist_split_app_l; rewrite ?Zlength_correct in *; try lia).
-  unfold Zsublist.
+  do 3 (rewrite sublist_split_app_l; rewrite ?Zlength_correct in *; try lia).
+  unfold sublist.
   replace (Z.to_nat hi)%nat with (length l1) by lia.
   assert (mid <= Z.of_nat (length l1)) by lia.
   clear H0 H1 l2 hi.
@@ -295,59 +295,59 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma Zlength_Zsublist: forall lo hi (l: list A),
+Lemma Zlength_sublist: forall lo hi (l: list A),
   0 <= lo <= hi /\ hi <= Zlength l ->
-  Zlength (Zsublist lo hi l) = hi-lo.
+  Zlength (sublist lo hi l) = hi-lo.
 Proof.
   intros.
-  rewrite Zlength_correct. unfold Zsublist.
+  rewrite Zlength_correct. unfold sublist.
   rewrite length_skipn.
   rewrite firstn_length_le; try lia.
   rewrite Zlength_correct in H.
   lia.
 Qed. 
 
-Lemma Zlength_Zsublist0: forall hi (l: list A),
+Lemma Zlength_sublist0: forall hi (l: list A),
   0 <= hi /\ hi <= Zlength l ->
-  Zlength (Zsublist 0 hi l) = hi.
+  Zlength (sublist 0 hi l) = hi.
 Proof.
   intros.
-  rewrite Zlength_Zsublist by lia.
+  rewrite Zlength_sublist by lia.
   lia.
 Qed.
 
-Lemma Zsublist_self:
+Lemma sublist_self:
   forall (l1: list A) x,
     x = Zlength l1 ->
-    Zsublist 0 x l1 = l1.
+    sublist 0 x l1 = l1.
 Proof.
-  intros. unfold Zsublist; subst.
+  intros. unfold sublist; subst.
   rewrite skipn_O. rewrite Zlength_correct.
   replace (Z.to_nat (Z.of_nat (length l1))) with (length l1) by lia.
   apply firstn_all.
 Qed.
 
-Lemma Zlength_Zsublist':
+Lemma Zlength_sublist':
   forall (l: list A) i j,
-    Zlength (Zsublist i j l) = 
+    Zlength (sublist i j l) = 
     Z.of_nat (min (Z.to_nat j) (length l) - Z.to_nat i).
 Proof.
   intros.
   rewrite Zlength_correct.
-  unfold Zsublist.
+  unfold sublist.
   rewrite length_skipn.
   rewrite length_firstn.
   reflexivity.
 Qed.
 
-Lemma Zsublist_split_app_r:
+Lemma sublist_split_app_r:
   forall lo hi len (l1 l2: list A),
     Zlength l1 = len ->
     len <= lo <= hi ->
-    Zsublist lo hi (l1 ++ l2) = Zsublist (lo - len) (hi - len) l2.
+    sublist lo hi (l1 ++ l2) = sublist (lo - len) (hi - len) l2.
 Proof.
   intros.
-  unfold Zsublist.
+  unfold sublist.
   repeat rewrite skipn_firstn_comm.
   rewrite skipn_app.
   pose proof (length_skipn (Z.to_nat lo) l1).
@@ -360,25 +360,25 @@ Proof.
   auto.
 Qed.
 
-Lemma Zsublist_cons1:
+Lemma sublist_cons1:
   forall n a (l: list A),
-    1 <= n -> Zsublist 0 n (a::l) = a :: (Zsublist 0 (n - 1) l).
+    1 <= n -> sublist 0 n (a::l) = a :: (sublist 0 (n - 1) l).
 Proof.
   intros.
-  unfold Zsublist.
+  unfold sublist.
   repeat rewrite skipn_firstn_comm.
   repeat rewrite skipn_O.
   replace (Z.to_nat n - Z.to_nat 0)%nat with (S(Z.to_nat (n - 1) - Z.to_nat 0)) by lia.
   apply firstn_cons.
 Qed.
 
-Lemma Zsublist_cons2:
+Lemma sublist_cons2:
   forall m n a (l: list A),
     1 <= m <= n -> n  <= Zlength (a :: l) ->
-    Zsublist m n (a :: l) = Zsublist (m - 1) (n - 1) l.
+    sublist m n (a :: l) = sublist (m - 1) (n - 1) l.
 Proof.
   intros.
-  unfold Zsublist.
+  unfold sublist.
   repeat rewrite skipn_firstn_comm.
   replace (Z.to_nat m) with (S (Z.to_nat (m - 1))) at 2 by lia.
   rewrite skipn_cons.
@@ -388,58 +388,58 @@ Qed.
 
 (* == about mixed indexed definitions == *)
 
-Lemma Znth_Zsublist: forall lo i hi (l: list A),
+Lemma Znth_sublist: forall lo i hi (l: list A),
   0 <= lo ->
   0 <= i < hi - lo ->
-  Znth i (Zsublist lo hi l) d = Znth (i + lo) l d.
+  Znth i (sublist lo hi l) d = Znth (i + lo) l d.
 Proof.
   intros.
-  unfold Zsublist, Znth.
+  unfold sublist, Znth.
   rewrite nth_skipn.
   rewrite nth_firstn by lia.
   f_equal.
   lia.
 Qed.
 
-Lemma Znth_Zsublist0: forall i hi (l: list A),
+Lemma Znth_sublist0: forall i hi (l: list A),
   0 <= i < hi ->
-  Znth i (Zsublist 0 hi l) d = Znth i l d.
+  Znth i (sublist 0 hi l) d = Znth i l d.
 Proof.
   intros.
-  rewrite Znth_Zsublist by lia.
+  rewrite Znth_sublist by lia.
   f_equal.
   lia.
 Qed.
 
 
-Lemma Znth_Zsublist_lt : forall lo hi (l : list A) i,
+Lemma Znth_sublist_lt : forall lo hi (l : list A) i,
   0 <= lo <= hi -> 
   hi <= Zlength l -> 
   0 <= i < hi - lo -> 
-  Znth i (Zsublist lo hi l) d = Znth (lo + i) l d.
+  Znth i (sublist lo hi l) d = Znth (lo + i) l d.
 Proof. 
   intros. unfold Znth.
   pose proof (firstn_skipn (Z.to_nat lo) l).
   rewrite <- H2 at 2.
   replace (Z.to_nat (lo + i)) with (length (firstn (Z.to_nat lo) l) + Z.to_nat i)%nat by (rewrite length_firstn ; rewrite Zlength_correct in *; lia).
   rewrite app_nth2_plus.
-  replace (skipn (Z.to_nat lo) l) with (Zsublist lo hi l ++ Zsublist hi (Z.of_nat (length l)) l) .
+  replace (skipn (Z.to_nat lo) l) with (sublist lo hi l ++ sublist hi (Z.of_nat (length l)) l) .
   - rewrite app_nth1 ; auto. 
-    rewrite Zsublist_length ; try lia.
-  - replace (skipn (Z.to_nat lo) l) with (Zsublist lo (Z.of_nat (length l)) l).
-    + rewrite <- Zsublist_split ; auto ; rewrite Zlength_correct in *; lia. 
-    + unfold Zsublist. rewrite firstn_all2 ; auto. lia.
+    rewrite sublist_length ; try lia.
+  - replace (skipn (Z.to_nat lo) l) with (sublist lo (Z.of_nat (length l)) l).
+    + rewrite <- sublist_split ; auto ; rewrite Zlength_correct in *; lia. 
+    + unfold sublist. rewrite firstn_all2 ; auto. lia.
 Qed.
 
-Lemma Znth_Zsublist_ge : forall lo hi (l : list A) i,
+Lemma Znth_sublist_ge : forall lo hi (l : list A) i,
   0 <= lo <= hi -> 
   hi <= Zlength l -> 
   hi - lo <= i -> 
-  Znth i (Zsublist lo hi l) d = d.
+  Znth i (sublist lo hi l) d = d.
 Proof.
   intros. unfold Znth.
   rewrite nth_overflow ; auto.
-  rewrite Zsublist_length ; lia.
+  rewrite sublist_length ; lia.
 Qed.
 
 Lemma list_eq_ext: forall (l1 l2: list A) d,
@@ -494,10 +494,10 @@ Qed.
 Lemma nth_sublist:
   forall (lo i hi: nat) (l: list A),
   i < hi - lo ->
-  nth i (sublist lo hi l) d = nth (i + lo) l d.
+  nth i (Nsublist lo hi l) d = nth (i + lo) l d.
 Proof.
   intros.
-  unfold sublist.
+  unfold Nsublist.
   rewrite nth_skipn.
   rewrite nth_firstn by lia.
   f_equal.
@@ -509,10 +509,10 @@ Qed.
 Lemma length_sublist:
   forall (lo hi: nat) (l: list A),
     lo <= hi /\ hi <= length l ->
-    length (sublist lo hi l) = hi - lo.
+    length (Nsublist lo hi l) = hi - lo.
 Proof.
   intros.
-  unfold sublist.
+  unfold Nsublist.
   rewrite length_skipn.
   rewrite firstn_length_le by lia.
   reflexivity.
@@ -520,11 +520,11 @@ Qed.
 
 Lemma length_sublist':
   forall (i j: nat) (l: list A),
-    length (sublist i j l) = 
+    length (Nsublist i j l) = 
     (min j (length l) - i).
 Proof.
   intros.
-  unfold sublist.
+  unfold Nsublist.
   rewrite length_skipn.
   rewrite length_firstn.
   reflexivity.
@@ -532,19 +532,19 @@ Qed.
 
 Lemma sublist_nil:
   forall (l : list A) a b,
-    b <= a -> sublist a b l = [].
+    b <= a -> Nsublist a b l = [].
 Proof.
-  intros. unfold sublist.
+  intros. unfold Nsublist.
   apply skipn_all2.
   rewrite length_firstn; lia.
 Qed.
 
-Lemma sublist_single: forall (n : nat) (l : list A),
-  n < length l -> sublist n (n + 1) l = [nth n l d].
+Lemma Nsublist_single: forall (n : nat) (l : list A),
+  n < length l -> Nsublist n (n + 1) l = [nth n l d].
 Proof.
   intros.
   rewrite (firstn_skipSn d _ _ H) at 1; try lia.
-  unfold sublist.
+  unfold Nsublist.
   rewrite firstn_app.
   assert (length (firstn n l) = n) by (rewrite length_firstn; lia).
   rewrite firstn_all2; try lia. 
@@ -559,7 +559,7 @@ Lemma sublist_one_ele:
   forall i (text: list A) (ch: A),
     0 <= i < length text ->
     ch = nth i text d -> 
-    sublist 0 i text ++ [ch] = sublist 0 (i + 1) text.
+    Nsublist 0 i text ++ [ch] = Nsublist 0 (i + 1) text.
 Proof.
   intros. 
   eapply nth_ext.
@@ -585,7 +585,7 @@ Qed.
 Lemma sublist_one_ele':
   forall i (text: list A),
     0 <= i < length text ->
-    sublist 0 (i + 1) text = sublist 0 i text ++ [nth i text d].
+    Nsublist 0 (i + 1) text = Nsublist 0 i text ++ [nth i text d].
 Proof.
   intros. 
   erewrite sublist_one_ele; eauto.
@@ -594,44 +594,44 @@ Qed.
 Lemma sublist_single':
   forall (n : nat) (l : list A),
     0 < n <= length l ->
-    sublist (n - 1) n l = [nth (n - 1) l d].
+    Nsublist (n - 1) n l = [nth (n - 1) l d].
 Proof.
   intros.
   remember (n-1) as t.
   assert (n = t + 1) by lia.
   rewrite H0.
-  apply sublist_single; lia.
+  apply Nsublist_single; lia.
 Qed.
 
-Lemma sublist_self:
+Lemma Nsublist_self:
   forall (l1: list A) x,
     x = length l1 ->
-    sublist 0 x l1 = l1.
+    Nsublist 0 x l1 = l1.
 Proof.
-  intros. unfold sublist; subst.
+  intros. unfold Nsublist; subst.
   rewrite skipn_O.
   apply firstn_all.
 Qed.
 
-Lemma sublist_split_app_l: forall (lo hi: nat) (l1 l2 : list A),
-  lo <= hi -> hi <= length l1 -> sublist lo hi (l1 ++ l2) = sublist lo hi l1.
+Lemma Nsublist_split_app_l: forall (lo hi: nat) (l1 l2 : list A),
+  lo <= hi -> hi <= length l1 -> Nsublist lo hi (l1 ++ l2) = Nsublist lo hi l1.
 Proof.
   intros.
-  unfold sublist.
+  unfold Nsublist.
   rewrite firstn_app.
   simpl. 
   replace (hi - length l1)%nat with O by lia.
   rewrite app_nil_r. auto. 
 Qed.
 
-Lemma sublist_split_app_r:
+Lemma Nsublist_split_app_r:
   forall lo hi len (l1 l2: list A),
     length l1 = len ->
     len <= lo <= hi ->
-    sublist lo hi (l1 ++ l2) = sublist (lo - len) (hi - len) l2.
+    Nsublist lo hi (l1 ++ l2) = Nsublist (lo - len) (hi - len) l2.
 Proof.
   intros.
-  unfold sublist.
+  unfold Nsublist.
   repeat rewrite skipn_firstn_comm.
   rewrite skipn_app.
   pose proof (length_skipn lo l1).
@@ -643,12 +643,12 @@ Proof.
   auto.
 Qed.
 
-Lemma sublist_split: 
+Lemma Nsublist_split: 
   forall (lo hi mid: nat) (l : list A),
     0 <= lo <= mid -> 
     mid <= hi <= length l ->
-    sublist lo hi l = 
-    sublist lo mid l ++ sublist mid hi l.
+    Nsublist lo hi l = 
+    Nsublist lo mid l ++ Nsublist mid hi l.
 Proof.
   intros.
   rewrite <- (firstn_skipn hi l).
@@ -668,8 +668,8 @@ Proof.
   }
   rewrite H2 in H0.
   clear Heql1 Heql2 H2 l.
-  do 3 (rewrite sublist_split_app_l ; try lia).
-  unfold sublist.
+  do 3 (rewrite Nsublist_split_app_l ; try lia).
+  unfold Nsublist.
   replace hi%nat with (length l1) by lia.
   assert (mid <= length l1) by lia.
   clear H0 H1 l2 hi.

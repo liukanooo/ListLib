@@ -28,10 +28,10 @@ Fixpoint replace_nth {A: Type} (n: nat) (l: list A) (a: A) {struct l} :=
 Definition replace_Znth {A: Type} (n: Z) (a: A) (l: list A): list A :=
   replace_nth (Z.to_nat n) l a.
 
-Definition sublist {A: Type} (lo hi: nat) (l: list A): list A :=
+Definition Nsublist {A: Type} (lo hi: nat) (l: list A): list A :=
   skipn lo (firstn hi l).
 
-Definition Zsublist {A: Type} (lo hi: Z) (l: list A): list A :=
+Definition sublist {A: Type} (lo hi: Z) (l: list A): list A :=
   skipn (Z.to_nat lo) (firstn (Z.to_nat hi) l).
 
 
@@ -125,18 +125,18 @@ Qed.
 
 Lemma Zsublist_nil:
   forall (l : list A) a b,
-    b <= a -> Zsublist a b l = [].
+    b <= a -> sublist a b l = [].
 Proof.
-  intros. unfold Zsublist.
+  intros. unfold sublist.
   apply skipn_all2.
   rewrite length_firstn; lia.
 Qed.
 
 Lemma Zsublist_of_nil:
   forall i j,
-    Zsublist i j (@nil A) = [].
+    sublist i j (@nil A) = [].
 Proof.
-  intros. unfold Zsublist.
+  intros. unfold sublist.
   rewrite firstn_nil, skipn_nil. auto.
 Qed.
 
@@ -144,10 +144,10 @@ Lemma Zsublist_Zsublist: forall i j k m (l:list A),
   0 <= m -> 
   0 <= k <=i -> 
   i <= j - m ->
-  Zsublist k i (Zsublist m j l) = Zsublist (k + m) (i + m) l.
+  sublist k i (sublist m j l) = sublist (k + m) (i + m) l.
 Proof.
   intros.
-  unfold Zsublist.
+  unfold sublist.
   rewrite ! skipn_firstn_comm.
   rewrite firstn_firstn by lia.
   rewrite skipn_skipn.
@@ -158,12 +158,12 @@ Qed.
 Lemma Zsublist_Zsublist0: forall i j k (l:list A), 
   0 <= k -> 
   k <= i <=j ->
-  Zsublist k i (Zsublist 0 j l) = Zsublist k i l.
+  sublist k i (sublist 0 j l) = sublist k i l.
 Proof. intros. rewrite Zsublist_Zsublist; repeat rewrite Zplus_0_r; try lia; auto. Qed.
 
 Lemma Zsublist_Zsublist00: forall i j (l:list A), 
   0 <= i <= j ->
-  Zsublist 0 i (Zsublist 0 j l) = Zsublist 0 i l.
+  sublist 0 i (sublist 0 j l) = sublist 0 i l.
 Proof. intros. apply Zsublist_Zsublist0; lia. Qed.
 
 Local Open Scope nat.
@@ -196,10 +196,10 @@ Qed.
 Lemma length_sublist:
   forall (lo hi: nat) (l: list A),
     lo <= hi /\ hi <= length l ->
-    length (sublist lo hi l) = hi-lo.
+    length (Nsublist lo hi l) = hi-lo.
 Proof.
   intros.
-  unfold sublist.
+  unfold Nsublist.
   rewrite length_skipn.
   rewrite firstn_length_le by lia.
   reflexivity.
@@ -207,11 +207,11 @@ Qed.
 
 Lemma length_sublist':
   forall (i j: nat) (l: list A),
-    length (sublist i j l) = 
+    length (Nsublist i j l) = 
     (min j (length l) - i).
 Proof.
   intros.
-  unfold sublist.
+  unfold Nsublist.
   rewrite length_skipn.
   rewrite length_firstn.
   reflexivity.
@@ -220,10 +220,10 @@ Qed.
 Lemma nth_sublist:
   forall (lo i hi: nat) (l: list A),
   i < hi-lo ->
-  nth i (sublist lo hi l) d = nth (i+lo) l d.
+  nth i (Nsublist lo hi l) d = nth (i+lo) l d.
 Proof.
   intros.
-  unfold sublist.
+  unfold Nsublist.
   rewrite nth_skipn.
   rewrite nth_firstn by lia.
   f_equal.
