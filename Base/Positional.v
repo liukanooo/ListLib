@@ -90,6 +90,25 @@ Proof.
     reflexivity.
 Qed.
 
+Lemma Znth_repeat : forall {A} (d: A) (n: nat) (i: Z),
+  Znth i (repeat d n) d = d.
+Proof.
+  intros.
+  unfold Znth.
+  rewrite nth_repeat.
+  reflexivity.
+Qed.
+
+Lemma Znth_repeat_lt : forall {A} (a: A) (n: nat) (i: Z) (d : A),
+  0 <= i < Z.of_nat n ->
+  Znth i (repeat d n) a = d.
+Proof.
+  intros.
+  unfold Znth.
+  rewrite nth_repeat_lt ; try lia.
+  auto.
+Qed.
+
 (* replace_Znth *)
 
 Lemma replace_Znth_cons: forall n (a b: A) l,
@@ -119,6 +138,51 @@ Proof.
     - simpl.
       rewrite IHl.
       reflexivity.
+Qed.
+
+
+Lemma Znth_replace_Znth_Same : forall {A} (d: A) (l: list A) (i: Z) (v: A),
+  0 <= i < Zlength l ->
+  Znth i (replace_Znth i v l) d = v.
+Proof.
+  intros.
+  unfold Znth, replace_Znth.
+  set (m := Z.to_nat i).
+  rewrite Zlength_correct in H.
+  assert (0 <= m < length l)%nat by lia.
+  clearbody m. clear H i.
+  generalize dependent m.
+  induction l; simpl in * ; intros.
+  + lia.
+  + destruct m.
+    - reflexivity.
+    - simpl.
+      rewrite IHl; auto.
+      lia.
+Qed. 
+
+Lemma Znth_replace_Znth_Diff : forall {A} (d: A) (l: list A) (i j: Z) (v: A),
+  0 <= i < Zlength l ->
+  0 <= j < Zlength l ->
+  i <> j ->
+  Znth j (replace_Znth i v l) d = Znth j l d.
+Proof.
+  intros.
+  unfold Znth, replace_Znth.
+  set (m := Z.to_nat i).
+  set (n := Z.to_nat j).
+  rewrite Zlength_correct in H, H0.
+  assert (0 <= m < length l)%nat by lia.
+  assert (0 <= n < length l)%nat by lia.
+  assert (m <> n) by lia.
+  clearbody m. clearbody n.
+  clear H H0 H1 i j.
+  generalize dependent m.
+  generalize dependent n.
+  induction l; simpl in * ; intros.
+  + lia.
+  + destruct m, n ; simpl in * ; try auto ; try lia.
+    rewrite IHl; try lia. auto.
 Qed.
 
 (* Zsublist *)
