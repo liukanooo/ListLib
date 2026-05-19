@@ -1,5 +1,6 @@
 Require Import Coq.Lists.List.
 Require Import Coq.Logic.Classical.
+Require Import Permutation.
 
 Lemma Nodup_exists_repetition: forall {A: Type} (l: list A),
   ~ NoDup l -> 
@@ -28,4 +29,13 @@ Proof.
   apply NoDup_remove_2 in H. 
   rewrite in_app_iff in H. 
   tauto.
+Qed.
+
+Lemma Nodup_app_comm: forall {A: Type} (l1 l2: list A),
+  NoDup (l1 ++ l2) ->
+  NoDup (l2 ++ l1).
+Proof.
+  intros A l1 l2 H.
+  eapply Permutation_NoDup; [ | exact H].
+  apply Permutation_app_comm.
 Qed.
