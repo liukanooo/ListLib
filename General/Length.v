@@ -500,8 +500,7 @@ Proof.
   unfold Nsublist.
   rewrite nth_skipn.
   rewrite nth_firstn by lia.
-  f_equal.
-  lia.
+  reflexivity.
 Qed.
 
 (* about sublist *)

@@ -7,6 +7,37 @@ Import ListNotations.
 
 Local Open Scope Z.
 
+Lemma length_firstn {A: Type}:
+  forall n (l: list A),
+    length (firstn n l) = Nat.min n (length l).
+Proof.
+  intros.
+  apply firstn_length.
+Qed.
+
+Lemma length_skipn {A: Type}:
+  forall n (l: list A),
+    length (skipn n l) = (length l - n)%nat.
+Proof.
+  intros.
+  apply skipn_length.
+Qed.
+
+Lemma length_app {A: Type}:
+  forall (l1 l2: list A),
+    length (l1 ++ l2) = (length l1 + length l2)%nat.
+Proof.
+  intros.
+  apply app_length.
+Qed.
+
+Lemma nth_error_O {A: Type}:
+  forall (l: list A),
+    hd_error l = nth_error l 0.
+Proof.
+  destruct l; reflexivity.
+Qed.
+
 Definition Znth {A: Type} (n: Z) (l: list A) (a: A): A := 
     nth (Z.to_nat n) l a.
 
@@ -68,7 +99,7 @@ Lemma Znth_error_cons_0:
     Znth_error (x :: l) 0 = Some x.
 Proof.
   intros.
-  apply nth_error_cons_0.
+  reflexivity.
 Qed.
 
 Lemma Znth_error_cons:
@@ -105,8 +136,15 @@ Lemma Znth_repeat_lt : forall {A} (a: A) (n: nat) (i: Z) (d : A),
 Proof.
   intros.
   unfold Znth.
-  rewrite nth_repeat_lt ; try lia.
-  auto.
+  set (m := Z.to_nat i).
+  assert (m < n)%nat by lia.
+  clearbody m.
+  clear H i.
+  revert m H0.
+  induction n; intros m Hlt; simpl in *.
+  - lia.
+  - destruct m; simpl; auto.
+    apply IHn; lia.
 Qed.
 
 (* replace_Znth *)
@@ -238,10 +276,10 @@ Lemma nth_firstn: forall (l: list A) n m d,
   (n < m)%nat ->
   nth n (firstn m l) d = nth n l d.
 Proof.
-  intros.
-  rewrite nth_firstn. 
-  destruct (n <? m) eqn:E; auto.
-  rewrite Nat.ltb_ge in E; lia.
+  induction l as [|x xs IH]; intros n m d0 Hlt.
+  - destruct n, m; simpl in *; try lia; reflexivity.
+  - destruct n as [|n], m as [|m]; simpl in *; try lia; auto.
+    apply IH; lia.
 Qed.
 
 Lemma firstn_skipSn: forall (n : nat) (l : list A),
@@ -253,6 +291,22 @@ Proof.
   - destruct l; simpl in *; try lia.
     f_equal. assert (n < length l) by lia.
     apply IHn. auto.
+Qed.
+
+Lemma nth_skipn:
+  forall (l: list A) n m d0,
+    nth n (skipn m l) d0 = nth (n + m) l d0.
+Proof.
+  intros l n m d0.
+  revert l n d0.
+  induction m as [|m IH]; intros l n d0; simpl.
+  - replace (n + 0) with n by lia.
+    reflexivity.
+  - destruct l as [|x xs]; simpl.
+    + destruct n; reflexivity.
+    + replace (n + S m) with (S (n + m)) by lia.
+      simpl.
+      apply IH.
 Qed.
 
 (* sublist *)
@@ -290,8 +344,7 @@ Proof.
   unfold Nsublist.
   rewrite nth_skipn.
   rewrite nth_firstn by lia.
-  f_equal.
-  lia.
+  reflexivity.
 Qed.
 
 (* tl_error *)
